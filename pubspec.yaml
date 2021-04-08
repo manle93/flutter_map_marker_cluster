@@ -20,3 +20,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  flutter_map_marker_popup:
+    git:
+      url: https://github.com/manle93/flutter_map_marker_popup.git
+      ref: master
