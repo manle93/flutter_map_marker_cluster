@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:flutter_map_marker_cluster/src/map_util.dart';
 import 'package:flutter_map_marker_cluster/src/node/marker_node.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -35,7 +36,16 @@ class MarkerClusterNode {
 
   LatLng get point {
     var centerLatLng = centerPoint();
-    for 
+    double minMeter = 100000000;
+    LatLng nearestPoint;
+    for (final marker in markers) {
+      double meter = MapUtils.distanceTwoPoint(marker.point, centerLatLng);
+      if (meter < minMeter) {
+        minMeter = meter;
+        nearestPoint = marker.point;
+      }
+    }
+    return nearestPoint;
   }
 
   LatLng centerPoint() {
