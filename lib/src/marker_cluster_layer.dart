@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_map_marker_cluster/src/node/marker_cluster_node.dart';
 import 'package:flutter_map_marker_cluster/src/node/marker_node.dart';
 import 'package:flutter_map_marker_popup/extension_api.dart';
 import 'package:latlong2/latlong.dart';
-
 
 class MarkerClusterLayer extends StatefulWidget {
   final MarkerClusterLayerOptions options;
@@ -107,14 +107,14 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     );
   }
 
-  _addLayer(MarkerNode marker, int disableClusteringAtZoom) {
+  _addLayer(MarkerNode markerNode, int disableClusteringAtZoom) {
     for (var zoom = _maxZoom; zoom >= _minZoom; zoom--) {
-      var markerPoint = widget.map.project(marker.point, zoom.toDouble());
+      var markerPoint = widget.map.project(markerNode.point, zoom.toDouble());
       if (zoom <= disableClusteringAtZoom) {
         // try find a cluster close by
         var cluster = _gridClusters[zoom].getNearObject(markerPoint);
         if (cluster != null) {
-          cluster.addChild(marker);
+          cluster.addChild(markerNode);
           return;
         }
 
@@ -125,7 +125,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
           var newCluster = MarkerClusterNode(zoom: zoom, map: widget.map)
             ..addChild(closest)
-            ..addChild(marker);
+            ..addChild(markerNode);
 
           _gridClusters[zoom].addObject(newCluster,
               widget.map.project(newCluster.point, zoom.toDouble()));
@@ -149,11 +149,11 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
         }
       }
 
-      _gridUnclustered[zoom].addObject(marker, markerPoint);
+      _gridUnclustered[zoom].addObject(markerNode, markerPoint);
     }
 
     //Didn't get in anything, add us to the top
-    _topClusterLevel.addChild(marker);
+    _topClusterLevel.addChild(markerNode);
   }
 
   _addLayers() {
@@ -431,7 +431,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
     if (layer is MarkerNode) {
       if (!_boundsContainsMarker(layer)) {
-        return List<Widget>();
+        return <Widget>[];
       }
 
       // fade in if
@@ -455,7 +455,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     }
     if (layer is MarkerClusterNode) {
       if (!_boundsContainsCluster(layer)) {
-        return List<Widget>();
+        return <Widget>[];
       }
 
       // fade in if
@@ -466,7 +466,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
         // cluster
         layers.add(_buildCluster(layer, FadeType.FadeIn));
         // children
-        List<Marker> markersGettingClustered = List<Marker>();
+        List<Marker> markersGettingClustered = <Marker>[];
         layer.children.forEach((child) {
           if (child is MarkerNode) {
             markersGettingClustered.add(child.marker);

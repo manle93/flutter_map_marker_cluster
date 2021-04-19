@@ -1,6 +1,5 @@
 import 'package:latlong2/latlong.dart';
 
-
 class _QuickHullDistantPoint {
   final LatLng maxPoint;
   final List<LatLng> newPoints;
@@ -91,7 +90,7 @@ class QuickHull {
       maxPt = maxLngPt;
     }
 
-    return List<LatLng>()
+    return <LatLng>[]
       ..addAll(_buildConvexHull([minPt, maxPt], latLngs))
       ..addAll(_buildConvexHull([maxPt, minPt], latLngs));
   }

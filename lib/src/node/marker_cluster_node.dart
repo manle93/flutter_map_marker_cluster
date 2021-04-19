@@ -4,7 +4,6 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_marker_cluster/src/node/marker_node.dart';
 import 'package:latlong2/latlong.dart';
 
-
 class MarkerClusterNode {
   final int zoom;
   final MapState map;
@@ -35,6 +34,11 @@ class MarkerClusterNode {
         parent = null;
 
   LatLng get point {
+    var centerLatLng = centerPoint();
+    for 
+  }
+
+  LatLng centerPoint() {
     var swPoint = map.project(bounds.southWest);
     var nePoint = map.project(bounds.northEast);
     return map.unproject((swPoint + nePoint) / 2);
@@ -66,7 +70,8 @@ class MarkerClusterNode {
     });
   }
 
-  recursively(int zoomLevel, int disableClusteringAtZoom, Function(dynamic) fn) {
+  recursively(
+      int zoomLevel, int disableClusteringAtZoom, Function(dynamic) fn) {
     if (zoom == zoomLevel && zoomLevel <= disableClusteringAtZoom) {
       fn(this);
       return;
