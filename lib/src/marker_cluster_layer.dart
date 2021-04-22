@@ -757,37 +757,47 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     );
   }
 
-  void _showPreviousMarker(Marker marker) {
-    int index =
-        listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
-    var parent = listMarkerNode[index].parent;
-
-    for (var i = index - 1; i >= 0; i--) {
-      if (listMarkerNode[i].parent != parent) {
-        Marker getNearestMarker =
-            listMarkerNode[i].parent.getNearestMarker().marker;
-        widget.options.popupOptions.popupController
-            .showPopupFor(getNearestMarker);
-        break;
-      }
-    }
-    // if (index != -1 && index < listMarkerNode.length - 1) {
-    //   widget.options.popupOptions.popupController
-    //       .showPopupFor(listMarkerNode[index + 1].marker);
-    // }
-  }
-
   void _showNextMarker(Marker marker) {
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
     var parent = listMarkerNode[index].parent;
-    for (var i = index + 1; i < listMarkerNode.length; i++) {
-      if (listMarkerNode[i].parent != parent) {
-        Marker getNearestMarker =
-            listMarkerNode[i].parent.getNearestMarker().marker;
+
+    if (widget.options.disableClusteringAtZoom == _currentZoom) {
+      if (index > 0) {
         widget.options.popupOptions.popupController
-            .showPopupFor(getNearestMarker);
-        break;
+            .showPopupFor(listMarkerNode[index - 1].marker);
+      }
+    } else {
+      for (var i = index - 1; i >= 0; i--) {
+        if (listMarkerNode[i].parent != parent) {
+          Marker getNearestMarker =
+              listMarkerNode[i].parent.getNearestMarker().marker;
+          widget.options.popupOptions.popupController
+              .showPopupFor(getNearestMarker);
+          break;
+        }
+      }
+    }
+  }
+
+  void _showPreviousMarker(Marker marker) {
+    int index =
+        listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
+    var parent = listMarkerNode[index].parent;
+    if (widget.options.disableClusteringAtZoom == _currentZoom) {
+      if (index != -1 && index < listMarkerNode.length - 1) {
+        widget.options.popupOptions.popupController
+            .showPopupFor(listMarkerNode[index + 1].marker);
+      }
+    } else {
+      for (var i = index + 1; i < listMarkerNode.length; i++) {
+        if (listMarkerNode[i].parent != parent) {
+          Marker getNearestMarker =
+              listMarkerNode[i].parent.getNearestMarker().marker;
+          widget.options.popupOptions.popupController
+              .showPopupFor(getNearestMarker);
+          break;
+        }
       }
     }
   }
