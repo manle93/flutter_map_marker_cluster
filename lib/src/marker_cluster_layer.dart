@@ -770,6 +770,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
       if (index > 0) {
         widget.options.popupOptions.popupController
             .showPopupFor(listMarkerNode[index - 1].marker);
+        animatedMove(listMarkerNode[index - 1].marker);
       }
     } else {
       var parent = getParentAtCurrentZoom(listMarkerNode[index]);
@@ -780,6 +781,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
           Marker getNearestMarker = nodeParent.getNearestMarker().marker;
           widget.options.popupOptions.popupController
               .showPopupFor(getNearestMarker);
+          animatedMove(getNearestMarker);
           break;
         }
       }
@@ -793,6 +795,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
       if (index != -1 && index < listMarkerNode.length - 1) {
         widget.options.popupOptions.popupController
             .showPopupFor(listMarkerNode[index + 1].marker);
+        animatedMove(listMarkerNode[index + 1].marker);
       }
     } else {
       var parent = getParentAtCurrentZoom(listMarkerNode[index]);
@@ -803,6 +806,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
           Marker getNearestMarker = nodeParent.getNearestMarker().marker;
           widget.options.popupOptions.popupController
               .showPopupFor(getNearestMarker);
+          animatedMove(getNearestMarker);
           break;
         }
       }
@@ -817,5 +821,33 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
       return getParentAtCurrentZoom(node.parent);
     } else
       return null;
+  }
+
+  void animatedMove(Marker marker) {
+    final center = widget.map.center;
+
+    final _latTween =
+        Tween<double>(begin: center.latitude, end: marker.point.latitude);
+    final _lngTween =
+        Tween<double>(begin: center.longitude, end: marker.point.longitude);
+
+    Animation<double> animation = CurvedAnimation(
+        parent: _centerMarkerController,
+        curve: widget.options.animationsOptions.centerMarkerCurves);
+
+    final listener = () {
+      widget.map.move(
+        LatLng(_latTween.evaluate(animation), _lngTween.evaluate(animation)),
+        widget.map.zoom,
+      );
+    };
+
+    _centerMarkerController.addListener(listener);
+
+    _centerMarkerController.forward().then((_) {
+      _centerMarkerController
+        ..removeListener(listener)
+        ..reset();
+    });
   }
 }
