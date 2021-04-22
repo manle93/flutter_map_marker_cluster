@@ -764,8 +764,10 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
     for (var i = index - 1; i >= 0; i--) {
       if (listMarkerNode[i].parent != parent) {
+        Marker getNearestMarker =
+            listMarkerNode[i].parent.getNearestMarker().marker;
         widget.options.popupOptions.popupController
-            .showPopupFor(listMarkerNode[i].parent.getNearestMarker());
+            .showPopupFor(getNearestMarker);
         break;
       }
     }
@@ -781,8 +783,10 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     var parent = listMarkerNode[index].parent;
     for (var i = index + 1; i < listMarkerNode.length; i++) {
       if (listMarkerNode[i].parent != parent) {
+        Marker getNearestMarker =
+            listMarkerNode[i].parent.getNearestMarker().marker;
         widget.options.popupOptions.popupController
-            .showPopupFor(listMarkerNode[i].parent.getNearestMarker());
+            .showPopupFor(getNearestMarker);
         break;
       }
     }
