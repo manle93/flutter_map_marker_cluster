@@ -117,6 +117,9 @@ class MarkerClusterLayerOptions extends LayerOptions {
   /// Marker cluster controller
   final MarkerClusterController markerClusterController;
 
+  /// Show Popup
+  final bool isShowPopup;
+
   MarkerClusterLayerOptions({
     @required this.builder,
     @required this.markerClusterController,
@@ -139,5 +142,6 @@ class MarkerClusterLayerOptions extends LayerOptions {
     this.onClusterTap,
     this.onMarkersClustered,
     this.popupOptions,
+    this.isShowPopup = true,
   }) : assert(builder != null);
 }

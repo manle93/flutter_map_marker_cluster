@@ -581,6 +581,11 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
         widget.options.onClusterTap(cluster);
       }
 
+      if (widget.options.isShowPopup) {
+        widget.options.popupOptions.popupController
+            .showPopupFor(cluster.nearestMarkerNode.marker);
+      }
+
       // check if children can un-cluster
       final cannotDivide = cluster.markers.every((marker) =>
           marker.parent.zoom == _maxZoom &&
@@ -640,16 +645,16 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
           _centerMarkerController.isAnimating ||
           _fitBoundController.isAnimating) return null;
 
-      if (widget.options.popupOptions != null) {
-        widget.options.popupOptions.popupController.togglePopup(marker.marker);
-      }
-
       // This is handled as an optional callback rather than leaving the package
       // user to wrap their Marker child Widget in a GestureDetector as only one
       // GestureDetector gets triggered per gesture (usually the child one) and
       // therefore this _onMarkerTap function never gets called.
       if (widget.options.onMarkerTap != null) {
         widget.options.onMarkerTap(marker.marker);
+      }
+
+      if (widget.options.isShowPopup) {
+        widget.options.popupOptions.popupController.showPopupFor(marker.marker);
       }
 
       if (!widget.options.centerMarkerOnClick) return null;
