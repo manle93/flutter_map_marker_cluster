@@ -763,6 +763,8 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     print('Curr zoom : $_currentZoom');
     print('Curr map zooom : ${widget.map.zoom}');
     int index = listMarkerNode.indexWhere((node) => node.marker == marker);
+    print('Current Index: $index');
+    print('listMarkerNode.length: ${listMarkerNode.length}');
     if (index != -1 && index < listMarkerNode.length - 1) {
       widget.options.popupOptions.popupController
           .showPopupFor(listMarkerNode[index + 1].marker);
@@ -770,7 +772,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
   }
 
   void _showPreviousMarker(Marker marker) {
-    print('showNextMarker');
+    print('showPreviousMarker');
     print('Curr zoom : $_currentZoom');
     print('Curr map zooom : ${widget.map.zoom}');
     int index = listMarkerNode.indexWhere((node) => node.marker == marker);
