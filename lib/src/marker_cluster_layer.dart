@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_map_marker_cluster/src/anim_type.dart';
 import 'package:flutter_map_marker_cluster/src/core/distance_grid.dart';
 import 'package:flutter_map_marker_cluster/src/core/quick_hull.dart';
 import 'package:flutter_map_marker_cluster/src/core/spiderfy.dart';
+import 'package:flutter_map_marker_cluster/src/marker_cluster_controller.dart';
 import 'package:flutter_map_marker_cluster/src/marker_cluster_layer_options.dart';
 import 'package:flutter_map_marker_cluster/src/node/marker_cluster_node.dart';
 import 'package:flutter_map_marker_cluster/src/node/marker_node.dart';
@@ -29,6 +31,9 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     with TickerProviderStateMixin {
   Map<int, DistanceGrid<MarkerClusterNode>> _gridClusters = {};
   Map<int, DistanceGrid<MarkerNode>> _gridUnclustered = {};
+
+  List<MarkerNode> listMarkerNode = [];
+
   MarkerClusterNode _topClusterLevel;
   int _maxZoom;
   int _minZoom;
@@ -40,7 +45,6 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
   AnimationController _centerMarkerController;
   AnimationController _spiderfyController;
   MarkerClusterNode _spiderfyCluster;
-  PolygonLayer _polygon;
 
   _MarkerClusterLayerState();
 
@@ -157,8 +161,10 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
   }
 
   _addLayers() {
-    for (var marker in widget.options.markers) {
-      _addLayer(MarkerNode(marker), widget.options.disableClusteringAtZoom);
+    listMarkerNode =
+        widget.options.markers.map((marker) => MarkerNode(marker)).toList();
+    for (int i = 0; i < listMarkerNode.length; i++) {
+      _addLayer(listMarkerNode[i], widget.options.disableClusteringAtZoom);
     }
 
     _topClusterLevel.recalculateBounds();
@@ -526,17 +532,13 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
     List<Widget> layers = [];
 
-    if (_polygon != null) layers.add(_polygon);
-
     if (zoom < _currentZoom || zoom > _currentZoom) {
       _previousZoom = _currentZoom;
       _currentZoom = zoom;
 
       _zoomController
         ..reset()
-        ..forward().then((_) => setState(() {
-              _hidePolygon();
-            })); // for remove previous layer (animation)
+        ..forward(); // for remove previous layer (animation)
     }
 
     _topClusterLevel.recursively(
@@ -591,8 +593,8 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
       if (!widget.options.zoomToBoundsOnClick) return null;
 
-      _showPolygon(cluster.markers.fold<List<LatLng>>(
-          [], (result, marker) => result..add(marker.point)));
+      // _showPolygon(cluster.markers.fold<List<LatLng>>(
+      //     [], (result, marker) => result..add(marker.point)));
 
       final center = widget.map.center;
       var dest = widget.map
@@ -631,35 +633,6 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
           ..reset();
       });
     };
-  }
-
-  _showPolygon(List<LatLng> points) {
-    if (widget.options.showPolygon) {
-      setState(() {
-        _polygon = PolygonLayer(
-          PolygonLayerOptions(polygons: [
-            Polygon(
-              points: QuickHull.getConvexHull(points),
-              borderStrokeWidth:
-                  widget.options.polygonOptions.borderStrokeWidth,
-              color: widget.options.polygonOptions.color,
-              borderColor: widget.options.polygonOptions.borderColor,
-              isDotted: widget.options.polygonOptions.isDotted,
-            ),
-          ]),
-          widget.map,
-          widget.stream,
-        );
-      });
-    }
-  }
-
-  _hidePolygon() {
-    if (widget.options.showPolygon) {
-      setState(() {
-        _polygon = null;
-      });
-    }
   }
 
   Function _onMarkerTap(MarkerNode marker) {
@@ -734,7 +707,22 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
     _zoomController.forward();
 
+    widget.options.markerClusterController.streamController =
+        StreamController<MarkerClusterEvent>.broadcast();
+    widget.options.markerClusterController.streamController.stream.listen(
+        (MarkerClusterEvent markerClusterEvent) =>
+            _handleAction(markerClusterEvent));
+
     super.initState();
+  }
+
+  void _handleAction(MarkerClusterEvent event) {
+    switch (event.action) {
+      case MarkerClusterEventActions.showNextMarker:
+        return _showNextMarker(event.marker);
+      case MarkerClusterEventActions.showPreviousMarker:
+        return _showPreviousMarker(event.marker);
+    }
   }
 
   @override
@@ -743,6 +731,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     _fitBoundController.dispose();
     _centerMarkerController.dispose();
     _spiderfyController.dispose();
+    widget.options.markerClusterController.streamController.close();
     super.dispose();
   }
 
@@ -767,5 +756,27 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
         );
       },
     );
+  }
+
+  void _showNextMarker(Marker marker) {
+    print('showNextMarker');
+    print('Curr zoom : $_currentZoom');
+    print('Curr map zooom : ${widget.map.zoom}');
+    int index = listMarkerNode.indexWhere((node) => node.marker == marker);
+    if (index != -1 && index < listMarkerNode.length - 1) {
+      widget.options.popupOptions.popupController
+          .showPopupFor(listMarkerNode[index + 1].marker);
+    }
+  }
+
+  void _showPreviousMarker(Marker marker) {
+    print('showNextMarker');
+    print('Curr zoom : $_currentZoom');
+    print('Curr map zooom : ${widget.map.zoom}');
+    int index = listMarkerNode.indexWhere((node) => node.marker == marker);
+    if (index > 0) {
+      widget.options.popupOptions.popupController
+          .showPopupFor(listMarkerNode[index - 1].marker);
+    }
   }
 }

@@ -14,6 +14,8 @@ class MarkerClusterNode {
   int addCount;
   int removeCount;
 
+  LatLng nearestPoint = null;
+
   List<MarkerNode> get markers {
     List<MarkerNode> markers = [];
 
@@ -35,6 +37,14 @@ class MarkerClusterNode {
         parent = null;
 
   LatLng get point {
+    if (nearestPoint != null) {
+      return nearestPoint;
+    }
+    nearestPoint = getNearestPoint();
+    return nearestPoint;
+  }
+
+  LatLng getNearestPoint() {
     var centerLatLng = centerPoint();
     double minMeter = 100000000;
     LatLng nearestPoint;

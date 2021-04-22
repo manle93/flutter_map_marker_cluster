@@ -26,6 +26,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final PopupController _popupController = PopupController();
+  final MarkerClusterController _markerClusterController =
+      MarkerClusterController();
 
   List<Marker> markers;
   int pointIndex;
@@ -127,6 +129,7 @@ class _HomePageState extends State<HomePage> {
             subdomains: ['a', 'b', 'c'],
           ),
           MarkerClusterLayerOptions(
+            markerClusterController: _markerClusterController,
             maxClusterRadius: 120,
             disableClusteringAtZoom: 6,
             size: Size(40, 40),
@@ -135,10 +138,6 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.all(50),
             ),
             markers: markers,
-            polygonOptions: PolygonOptions(
-                borderColor: Colors.blueAccent,
-                color: Colors.black12,
-                borderStrokeWidth: 3),
             popupOptions: PopupOptions(
                 popupSnap: PopupSnap.markerTop,
                 popupController: _popupController,
@@ -147,7 +146,10 @@ class _HomePageState extends State<HomePage> {
                       height: 100,
                       color: Colors.white,
                       child: GestureDetector(
-                        onTap: () => debugPrint("Popup tap!"),
+                        onTap: () {
+                          debugPrint("Popup tap!");
+                          _markerClusterController.showNextMarker(marker);
+                        },
                         child: Text(
                           "Container popup for marker at ${marker.point}",
                         ),

@@ -6,6 +6,8 @@ import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_marker_cluster/src/node/marker_cluster_node.dart';
 import 'package:flutter_map_marker_popup/extension_api.dart';
 
+import 'marker_cluster_controller.dart';
+
 class PolygonOptions {
   final Color color;
   final double borderStrokeWidth;
@@ -100,12 +102,6 @@ class MarkerClusterLayerOptions extends LayerOptions {
   /// Make it possible to provide custom function to calculate spiderfy shape positions
   final List<Point> Function(int, Point) spiderfyShapePositions;
 
-  /// If true show polygon then tap on cluster
-  final bool showPolygon;
-
-  /// Polygon's options that shown when tap cluster.
-  final PolygonOptions polygonOptions;
-
   /// Function to call when a Marker is tapped
   final void Function(Marker) onMarkerTap;
 
@@ -118,8 +114,12 @@ class MarkerClusterLayerOptions extends LayerOptions {
   /// Popup's options that show when tapping markers or via the PopupController.
   final PopupOptions popupOptions;
 
+  /// Marker cluster controller
+  final MarkerClusterController markerClusterController;
+
   MarkerClusterLayerOptions({
     @required this.builder,
+    @required this.markerClusterController,
     this.markers = const [],
     this.size = const Size(30, 30),
     this.computeSize,
@@ -135,8 +135,6 @@ class MarkerClusterLayerOptions extends LayerOptions {
     this.spiderfySpiralDistanceMultiplier = 1,
     this.circleSpiralSwitchover = 9,
     this.spiderfyShapePositions,
-    this.polygonOptions = const PolygonOptions(),
-    this.showPolygon = true,
     this.onMarkerTap,
     this.onClusterTap,
     this.onMarkersClustered,
