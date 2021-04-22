@@ -14,7 +14,7 @@ class MarkerClusterNode {
   int addCount;
   int removeCount;
 
-  LatLng nearestPoint = null;
+  Marker nearestMarker = null;
 
   List<MarkerNode> get markers {
     List<MarkerNode> markers = [];
@@ -37,25 +37,24 @@ class MarkerClusterNode {
         parent = null;
 
   LatLng get point {
-    if (nearestPoint != null) {
-      return nearestPoint;
+    if (nearestMarker != null) {
+      return nearestMarker.point;
     }
-    nearestPoint = getNearestPoint();
-    return nearestPoint;
+    nearestMarker = getNearestMarker();
+    return nearestMarker.point;
   }
 
-  LatLng getNearestPoint() {
+  Marker getNearestMarker() {
     var centerLatLng = centerPoint();
     double minMeter = 100000000;
-    LatLng nearestPoint;
     for (final marker in markers) {
       double meter = MapUtils.distanceTwoPoint(marker.point, centerLatLng);
       if (meter < minMeter) {
         minMeter = meter;
-        nearestPoint = marker.point;
+        return marker;
       }
     }
-    return nearestPoint;
+    return null;
   }
 
   LatLng centerPoint() {

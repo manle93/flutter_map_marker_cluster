@@ -7,7 +7,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_marker_cluster/src/anim_type.dart';
 import 'package:flutter_map_marker_cluster/src/core/distance_grid.dart';
-import 'package:flutter_map_marker_cluster/src/core/quick_hull.dart';
 import 'package:flutter_map_marker_cluster/src/core/spiderfy.dart';
 import 'package:flutter_map_marker_cluster/src/marker_cluster_controller.dart';
 import 'package:flutter_map_marker_cluster/src/marker_cluster_layer_options.dart';
@@ -761,18 +760,31 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
   void _showPreviousMarker(Marker marker) {
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
-    if (index != -1 && index < listMarkerNode.length - 1) {
-      widget.options.popupOptions.popupController
-          .showPopupFor(listMarkerNode[index + 1].marker);
+    var parent = listMarkerNode[index].parent;
+
+    for (var i = index - 1; i >= 0; i--) {
+      if (listMarkerNode[i].parent != parent) {
+        widget.options.popupOptions.popupController
+            .showPopupFor(listMarkerNode[i].parent.getNearestMarker());
+        break;
+      }
     }
+    // if (index != -1 && index < listMarkerNode.length - 1) {
+    //   widget.options.popupOptions.popupController
+    //       .showPopupFor(listMarkerNode[index + 1].marker);
+    // }
   }
 
   void _showNextMarker(Marker marker) {
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
-    if (index > 0) {
-      widget.options.popupOptions.popupController
-          .showPopupFor(listMarkerNode[index - 1].marker);
+    var parent = listMarkerNode[index].parent;
+    for (var i = index + 1; i < listMarkerNode.length; i++) {
+      if (listMarkerNode[i].parent != parent) {
+        widget.options.popupOptions.popupController
+            .showPopupFor(listMarkerNode[i].parent.getNearestMarker());
+        break;
+      }
     }
   }
 }
