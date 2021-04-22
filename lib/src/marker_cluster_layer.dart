@@ -762,7 +762,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
     var parent = listMarkerNode[index].parent;
 
-    if (widget.options.disableClusteringAtZoom == _currentZoom) {
+    if (widget.options.disableClusteringAtZoom <= _currentZoom) {
       if (index > 0) {
         widget.options.popupOptions.popupController
             .showPopupFor(listMarkerNode[index - 1].marker);
@@ -784,7 +784,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
     var parent = listMarkerNode[index].parent;
-    if (widget.options.disableClusteringAtZoom == _currentZoom) {
+    if (widget.options.disableClusteringAtZoom <= _currentZoom) {
       if (index != -1 && index < listMarkerNode.length - 1) {
         widget.options.popupOptions.popupController
             .showPopupFor(listMarkerNode[index + 1].marker);
