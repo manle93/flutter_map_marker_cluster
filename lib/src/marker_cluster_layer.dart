@@ -762,7 +762,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     );
   }
 
-  void _showNextMarker(Marker marker) {
+  void _showPreviousMarker(Marker marker) {
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
 
@@ -788,7 +788,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     }
   }
 
-  void _showPreviousMarker(Marker marker) {
+  void _showNextMarker(Marker marker) {
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
     if (widget.options.disableClusteringAtZoom < _currentZoom) {
