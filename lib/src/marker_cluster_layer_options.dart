@@ -120,6 +120,9 @@ class MarkerClusterLayerOptions extends LayerOptions {
   /// Show Popup
   final bool isShowPopup;
 
+  /// Callback
+  final Function(Marker) callback;
+
   MarkerClusterLayerOptions({
     @required this.builder,
     @required this.markerClusterController,
@@ -143,5 +146,6 @@ class MarkerClusterLayerOptions extends LayerOptions {
     this.onMarkersClustered,
     this.popupOptions,
     this.isShowPopup = true,
+    this.callback,
   }) : assert(builder != null);
 }

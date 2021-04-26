@@ -768,9 +768,12 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
     if (widget.options.disableClusteringAtZoom < _currentZoom) {
       if (index > 0) {
-        widget.options.popupOptions.popupController
-            .showPopupFor(listMarkerNode[index - 1].marker);
-        animatedMove(listMarkerNode[index - 1].marker);
+        final marker = listMarkerNode[index - 1].marker;
+        widget.options.popupOptions.popupController.showPopupFor(marker);
+        animatedMove(marker);
+        if (widget.options.callback != null) {
+          widget.options.callback(marker);
+        }
       }
     } else {
       var parent = getParentAtCurrentZoom(listMarkerNode[index]);
@@ -782,6 +785,9 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
           widget.options.popupOptions.popupController
               .showPopupFor(getNearestMarker);
           animatedMove(getNearestMarker);
+          if (widget.options.callback != null) {
+            widget.options.callback(getNearestMarker);
+          }
           break;
         }
       }
@@ -793,9 +799,12 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
     if (widget.options.disableClusteringAtZoom < _currentZoom) {
       if (index != -1 && index < listMarkerNode.length - 1) {
-        widget.options.popupOptions.popupController
-            .showPopupFor(listMarkerNode[index + 1].marker);
-        animatedMove(listMarkerNode[index + 1].marker);
+        final marker = listMarkerNode[index + 1].marker;
+        widget.options.popupOptions.popupController.showPopupFor(marker);
+        animatedMove(marker);
+        if (widget.options.callback != null) {
+          widget.options.callback.call(marker);
+        }
       }
     } else {
       var parent = getParentAtCurrentZoom(listMarkerNode[index]);
@@ -807,6 +816,9 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
           widget.options.popupOptions.popupController
               .showPopupFor(getNearestMarker);
           animatedMove(getNearestMarker);
+          if (widget.options.callback != null) {
+            widget.options.callback.call(getNearestMarker);
+          }
           break;
         }
       }
