@@ -769,26 +769,21 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     if (widget.options.disableClusteringAtZoom < _currentZoom) {
       if (index > 0) {
         final marker = listMarkerNode[index - 1].marker;
-        widget.options.popupOptions.popupController.showPopupFor(marker);
-        animatedMove(marker);
-        if (widget.options.callback != null) {
-          widget.options.callback(marker);
-        }
+        _handleShowMarker(marker);
       }
     } else {
       var parent = getParentAtCurrentZoom(listMarkerNode[index]);
       for (var i = index - 1; i >= 0; i--) {
         var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
-
-        if (nodeParent != parent) {
-          Marker getNearestMarker = nodeParent.getNearestMarker().marker;
-          widget.options.popupOptions.popupController
-              .showPopupFor(getNearestMarker);
-          animatedMove(getNearestMarker);
-          if (widget.options.callback != null) {
-            widget.options.callback(getNearestMarker);
-          }
+        if (nodeParent == null) {
+          _handleShowMarker(listMarkerNode[i]);
           break;
+        } else {
+          if (nodeParent != parent) {
+            Marker getNearestMarker = nodeParent.getNearestMarker().marker;
+            _handleShowMarker(getNearestMarker);
+            break;
+          }
         }
       }
     }
@@ -799,29 +794,32 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
     if (widget.options.disableClusteringAtZoom < _currentZoom) {
       if (index != -1 && index < listMarkerNode.length - 1) {
-        final marker = listMarkerNode[index + 1].marker;
-        widget.options.popupOptions.popupController.showPopupFor(marker);
-        animatedMove(marker);
-        if (widget.options.callback != null) {
-          widget.options.callback.call(marker);
-        }
+        final marker = listMarkerNode[index - 1].marker;
+        _handleShowMarker(marker);
       }
     } else {
       var parent = getParentAtCurrentZoom(listMarkerNode[index]);
-
       for (var i = index + 1; i < listMarkerNode.length; i++) {
         var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
-        if (nodeParent != parent) {
-          Marker getNearestMarker = nodeParent.getNearestMarker().marker;
-          widget.options.popupOptions.popupController
-              .showPopupFor(getNearestMarker);
-          animatedMove(getNearestMarker);
-          if (widget.options.callback != null) {
-            widget.options.callback.call(getNearestMarker);
-          }
+        if (nodeParent == null) {
+          _handleShowMarker(listMarkerNode[i]);
           break;
+        } else {
+          if (nodeParent != parent) {
+            Marker getNearestMarker = nodeParent.getNearestMarker().marker;
+            _handleShowMarker(getNearestMarker);
+            break;
+          }
         }
       }
+    }
+  }
+
+  void _handleShowMarker(Marker marker) {
+    widget.options.popupOptions.popupController.showPopupFor(marker);
+    animatedMove(marker);
+    if (widget.options.callback != null) {
+      widget.options.callback.call(marker);
     }
   }
 
