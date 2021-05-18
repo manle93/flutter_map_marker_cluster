@@ -776,7 +776,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
       for (var i = index - 1; i >= 0; i--) {
         var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
         if (nodeParent == null) {
-          _handleShowMarker(listMarkerNode[i]);
+          _handleShowMarker(listMarkerNode[i].marker);
           break;
         } else {
           if (nodeParent != parent) {
@@ -802,7 +802,7 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
       for (var i = index + 1; i < listMarkerNode.length; i++) {
         var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
         if (nodeParent == null) {
-          _handleShowMarker(listMarkerNode[i]);
+          _handleShowMarker(listMarkerNode[i].marker);
           break;
         } else {
           if (nodeParent != parent) {
