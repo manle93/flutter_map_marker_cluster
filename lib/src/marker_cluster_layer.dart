@@ -825,12 +825,14 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
 
   MarkerClusterNode getParentAtCurrentZoom(dynamic node) {
     if (node is MarkerNode || node is MarkerClusterNode) {
-      if (node.parent.zoom == _currentZoom) {
-        return node.parent;
+      if (node.parent != null) {
+        if (node.parent.zoom == _currentZoom) {
+          return node.parent;
+        }
+        return getParentAtCurrentZoom(node.parent);
       }
-      return getParentAtCurrentZoom(node.parent);
-    } else
-      return null;
+    }
+    return null;
   }
 
   void animatedMove(Marker marker) {
