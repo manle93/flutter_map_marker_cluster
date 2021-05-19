@@ -765,24 +765,27 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
   void _showPreviousMarker(Marker marker) {
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
-
-    if (widget.options.disableClusteringAtZoom < _currentZoom) {
-      if (index > 0) {
+    if (index > 0) {
+      if (widget.options.disableClusteringAtZoom < _currentZoom) {
         final marker = listMarkerNode[index - 1].marker;
         _handleShowMarker(marker);
-      }
-    } else {
-      var parent = getParentAtCurrentZoom(listMarkerNode[index]);
-      for (var i = index - 1; i >= 0; i--) {
-        var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
-        if (nodeParent == null) {
-          _handleShowMarker(listMarkerNode[i].marker);
-          break;
-        } else {
-          if (nodeParent != parent) {
-            Marker getNearestMarker = nodeParent.getNearestMarker().marker;
-            _handleShowMarker(getNearestMarker);
+      } else {
+        var parent = getParentAtCurrentZoom(listMarkerNode[index]);
+        if (parent == null) {
+          _handleShowMarker(listMarkerNode[index - 1].marker);
+          return;
+        }
+        for (var i = index - 1; i >= 0; i--) {
+          var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
+          if (nodeParent == null) {
+            _handleShowMarker(listMarkerNode[i].marker);
             break;
+          } else {
+            if (nodeParent != parent) {
+              Marker getNearestMarker = nodeParent.getNearestMarker().marker;
+              _handleShowMarker(getNearestMarker);
+              break;
+            }
           }
         }
       }
@@ -792,23 +795,27 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
   void _showNextMarker(Marker marker) {
     int index =
         listMarkerNode.indexWhere((node) => node.marker.point == marker.point);
-    if (widget.options.disableClusteringAtZoom < _currentZoom) {
-      if (index != -1 && index < listMarkerNode.length - 1) {
-        final marker = listMarkerNode[index - 1].marker;
+    if (index != -1 && index < listMarkerNode.length - 1) {
+      if (widget.options.disableClusteringAtZoom < _currentZoom) {
+        final marker = listMarkerNode[index + 1].marker;
         _handleShowMarker(marker);
-      }
-    } else {
-      var parent = getParentAtCurrentZoom(listMarkerNode[index]);
-      for (var i = index + 1; i < listMarkerNode.length; i++) {
-        var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
-        if (nodeParent == null) {
-          _handleShowMarker(listMarkerNode[i].marker);
-          break;
-        } else {
-          if (nodeParent != parent) {
-            Marker getNearestMarker = nodeParent.getNearestMarker().marker;
-            _handleShowMarker(getNearestMarker);
+      } else {
+        var parent = getParentAtCurrentZoom(listMarkerNode[index]);
+        if (parent == null) {
+          _handleShowMarker(listMarkerNode[index + 1].marker);
+          return;
+        }
+        for (var i = index + 1; i < listMarkerNode.length; i++) {
+          var nodeParent = getParentAtCurrentZoom(listMarkerNode[i]);
+          if (nodeParent == null) {
+            _handleShowMarker(listMarkerNode[i].marker);
             break;
+          } else {
+            if (nodeParent != parent) {
+              Marker getNearestMarker = nodeParent.getNearestMarker().marker;
+              _handleShowMarker(getNearestMarker);
+              break;
+            }
           }
         }
       }
