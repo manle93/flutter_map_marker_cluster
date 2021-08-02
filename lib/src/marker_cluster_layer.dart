@@ -110,6 +110,17 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     );
   }
 
+  _addFirstOrLastMarkerNodeLayer(
+      MarkerNode markerNode, int disableClusteringAtZoom) {
+    for (var zoom = _maxZoom; zoom >= _minZoom; zoom--) {
+      var markerPoint = widget.map.project(markerNode.point, zoom.toDouble());
+      _gridUnclustered[zoom].addObject(markerNode, markerPoint);
+    }
+
+    //Didn't get in anything, add us to the top
+    _topClusterLevel.addChild(markerNode);
+  }
+
   _addLayer(MarkerNode markerNode, int disableClusteringAtZoom) {
     for (var zoom = _maxZoom; zoom >= _minZoom; zoom--) {
       var markerPoint = widget.map.project(markerNode.point, zoom.toDouble());
@@ -163,6 +174,10 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
     listMarkerNode =
         widget.options.markers.map((marker) => MarkerNode(marker)).toList();
     for (int i = 0; i < listMarkerNode.length; i++) {
+      if (i == 0 || i == listMarkerNode.length - 1) {
+        _addFirstOrLastMarkerNodeLayer(
+            listMarkerNode[i], widget.options.disableClusteringAtZoom);
+      }
       _addLayer(listMarkerNode[i], widget.options.disableClusteringAtZoom);
     }
 
