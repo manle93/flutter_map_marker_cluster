@@ -209,8 +209,9 @@ class _MarkerClusterLayerState extends State<MarkerClusterLayer>
       if (i == 0 || i == listMarkerNode.length - 1) {
         _addFirstOrLastMarkerNodeLayer(
             listMarkerNode[i], widget.options.disableClusteringAtZoom);
+      } else {
+        _addLayer(listMarkerNode[i], widget.options.disableClusteringAtZoom);
       }
-      _addLayer(listMarkerNode[i], widget.options.disableClusteringAtZoom);
     }
 
     _topClusterLevel.recalculateBounds();
